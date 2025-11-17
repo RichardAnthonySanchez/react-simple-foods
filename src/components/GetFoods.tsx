@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import type { FoodItem } from "../types/FoodItem";
 import { CustomerCart } from "./CustomerCart";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export function GetFoods() {
   const [foods, setFoods] = useState<FoodItem[]>([]);
@@ -41,6 +43,23 @@ export function GetFoods() {
     setCart(cart.filter((item) => item.fdc_id !== fdc_id));
   };
 
+  const downloadCartAsPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Customer Cart", 14, 16);
+
+    const data = cart.map((item) => [
+      item.product_name,
+      item.brand_owner || "Unknown brand",
+    ]);
+    autoTable(doc, {
+      head: [["Product Name", "Brand"]],
+      body: data,
+      startY: 20,
+    });
+
+    doc.save("customer_cart.pdf");
+  };
+
   if (error) return <p>{error}</p>;
   if (filteredFoods.length === 0) return <p>Loading foods...</p>;
 
@@ -70,6 +89,7 @@ export function GetFoods() {
         <div>
           <h2>Customer Cart</h2>
           <CustomerCart cart={cart} removeFromCart={removeFromCart} />
+          <button onClick={downloadCartAsPDF}>Download Cart as PDF</button>
         </div>
       )}
     </div>
