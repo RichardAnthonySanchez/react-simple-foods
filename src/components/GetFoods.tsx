@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import type { FoodItem } from "../types/FoodItem";
+import { CustomerCart } from "./CustomerCart";
 
 export function GetFoods() {
   const [foods, setFoods] = useState<FoodItem[]>([]);
@@ -7,6 +8,7 @@ export function GetFoods() {
   const [cart, setCart] = useState<FoodItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [showCart, setShowCart] = useState<boolean>(false);
 
   useEffect(() => {
     const HOST = import.meta.env.VITE_HOST;
@@ -61,21 +63,14 @@ export function GetFoods() {
         ))}
       </ul>
 
-      <h2>Customer Cart</h2>
-      {cart.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <ul>
-          {cart.map((item) => (
-            <li key={item.fdc_id}>
-              <strong>{item.product_name}</strong> —{" "}
-              {item.brand_owner || "Unknown brand"}
-              <button onClick={() => removeFromCart(item.fdc_id)}>
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
+      <button onClick={() => setShowCart(!showCart)}>
+        {showCart ? "Hide Cart" : "Show Cart"}
+      </button>
+      {showCart && (
+        <div>
+          <h2>Customer Cart</h2>
+          <CustomerCart cart={cart} removeFromCart={removeFromCart} />
+        </div>
       )}
     </div>
   );
