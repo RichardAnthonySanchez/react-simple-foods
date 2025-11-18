@@ -11,6 +11,7 @@ export function GetFoods() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [showCart, setShowCart] = useState<boolean>(false);
+  const [showFood, setShowFood] = useState<boolean>(true);
 
   useEffect(() => {
     const HOST = import.meta.env.VITE_HOST;
@@ -64,35 +65,94 @@ export function GetFoods() {
   if (filteredFoods.length === 0) return <p>Loading foods...</p>;
 
   return (
-    <div>
-      <h1>Food Products</h1>
-      <div className="flex w-full component-preview p-4 items-center justify-center gap-2 font-sans">
+    <div className="foods-container flex flex-col items-center bg-base-300 px-4 min-h-screen">
+      <label className="input mt-4 rounded-2xl">
+        <svg
+          className="h-[1em] opacity-50"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <g
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            strokeWidth="2.5"
+            fill="none"
+            stroke="currentColor"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </g>
+        </svg>
         <input
-          type="text"
+          className="text-center"
+          type="Search"
           placeholder="Search food items..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-      </div>
+      </label>
 
-      <ul>
-        {filteredFoods.map((food) => (
-          <li key={food.fdc_id}>
-            <strong>{food.product_name}</strong> —{" "}
-            {food.brand_owner || "Unknown brand"}
-            <button onClick={() => addToCart(food)}>Add to Cart</button>
-          </li>
-        ))}
+      <ul className="menu menu-horizontal flex flex-row justify-around mt-4 w-100">
+        <li>
+          <a
+            onClick={() => {
+              setShowFood(true);
+              setShowCart(false);
+            }}
+          >
+            Browse
+          </a>
+        </li>
+        <li>
+          <a
+            onClick={() => {
+              setShowCart(true);
+              setShowFood(false);
+            }}
+          >
+            Cart
+          </a>
+        </li>
+        <li>
+          <a>Checkout</a>
+        </li>
       </ul>
 
-      <button onClick={() => setShowCart(!showCart)}>
-        {showCart ? "Hide Cart" : "Show Cart"}
-      </button>
+      {showFood && (
+        <ul className="items-container card p-4 mt-4 bg-base-200">
+          {filteredFoods.map((food) => (
+            <li
+              className="bg-base-100 shadow-sm hover:shadow-2xl my-4 p-4 rounded-lg"
+              key={food.fdc_id}
+            >
+              <strong>{food.product_name}</strong> —{" "}
+              {food.brand_owner || "Unknown brand"}
+              <div className="product-buttons flex flex-row justify-end mt-2">
+                <button
+                  className="btn btn-outline btn-success"
+                  onClick={() => addToCart(food)}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
       {showCart && (
-        <div>
-          <h2>Customer Cart</h2>
+        <div className="flex flex-col grow">
           <CustomerCart cart={cart} removeFromCart={removeFromCart} />
-          <button onClick={downloadCartAsPDF}>Download Cart as PDF</button>
+          {cart.length > 0 && (
+            <div className="sticky bottom-0 bg-base-200 p-4">
+              <button
+                className="btn btn-success w-full"
+                onClick={downloadCartAsPDF}
+              >
+                Download items
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
