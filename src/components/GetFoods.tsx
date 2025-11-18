@@ -66,12 +66,15 @@ export function GetFoods() {
   return (
     <div>
       <h1>Food Products</h1>
-      <input
-        type="text"
-        placeholder="Search food items..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="flex w-full component-preview p-4 items-center justify-center gap-2 font-sans">
+        <input
+          type="text"
+          placeholder="Search food items..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       <ul>
         {filteredFoods.map((food) => (
           <li key={food.fdc_id}>
