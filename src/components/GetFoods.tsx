@@ -47,7 +47,6 @@ export function GetFoods() {
   const downloadCartAsPDF = () => {
     const doc = new jsPDF();
     doc.text("Customer Cart", 14, 16);
-
     const data = cart.map((item) => [
       item.product_name,
       item.brand_owner || "Unknown brand",
@@ -57,12 +56,8 @@ export function GetFoods() {
       body: data,
       startY: 20,
     });
-
     doc.save("customer_cart.pdf");
   };
-
-  if (error) return <p>{error}</p>;
-  if (filteredFoods.length === 0) return <p>Loading foods...</p>;
 
   return (
     <div className="foods-container flex flex-col items-center bg-base-300 px-4 min-h-screen">
@@ -120,23 +115,31 @@ export function GetFoods() {
 
       {showFood && (
         <ul className="items-container card p-4 mt-4 bg-base-200">
-          {filteredFoods.map((food) => (
-            <li
-              className="bg-base-100 shadow-sm hover:shadow-2xl my-4 p-4 rounded-lg"
-              key={food.fdc_id}
-            >
-              <strong>{food.product_name}</strong> —{" "}
-              {food.brand_owner || "Unknown brand"}
-              <div className="product-buttons flex flex-row justify-end mt-2">
-                <button
-                  className="btn btn-outline btn-success"
-                  onClick={() => addToCart(food)}
-                >
-                  Add to Cart
-                </button>
-              </div>
-            </li>
-          ))}
+          {error && <p>{error}</p>}
+          {filteredFoods.length === 0 && !searchTerm ? (
+            <p>Loading foods...</p>
+          ) : null}
+          {filteredFoods.length === 0 && searchTerm ? (
+            <p>No items found matching that query.</p>
+          ) : (
+            filteredFoods.map((food) => (
+              <li
+                className="bg-base-100 shadow-sm hover:shadow-2xl my-4 p-4 rounded-lg"
+                key={food.fdc_id}
+              >
+                <strong>{food.product_name}</strong> —{" "}
+                {food.brand_owner || "Unknown brand"}
+                <div className="product-buttons flex flex-row justify-end mt-2">
+                  <button
+                    className="btn btn-outline btn-success"
+                    onClick={() => addToCart(food)}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </li>
+            ))
+          )}
         </ul>
       )}
 
