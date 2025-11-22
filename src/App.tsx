@@ -1,7 +1,5 @@
-import { GetFoods } from "./components/GetFoods";
-
 function App() {
-  return <GetFoods />;
+  return <></>;
 }
 
 export default App;
