@@ -1,3 +1,6 @@
+#tanstack
+.tanstack/
+
 # Logs
 logs
 *.log
