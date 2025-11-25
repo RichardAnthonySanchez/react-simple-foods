@@ -1,21 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 
-export type MealTag = "vegan" | "quick" | "breakfast" | "dessert";
+export type MealTag = "keto" | "quick" | "breakfast" | "dessert";
 
 export interface Meal {
   id: string;
-  name: string;
+  title: string | null;
+  servings: number | null;
+  prepTime: number | null;
+  cookTime: number | null;
+  totalTime: number | null;
+  author: string | null;
   tags: MealTag[];
+  image: string | null;
+  ingredients: string[];
+  directions: string[];
+  links: string[];
 }
 
-const ALL_MEALS: Meal[] = [
-  { id: "1", name: "Avocado Toast", tags: ["vegan", "breakfast"] },
-  { id: "2", name: "Berry Smoothie", tags: ["vegan", "quick", "breakfast"] },
-  { id: "3", name: "Pasta Alfredo", tags: ["quick"] },
-  { id: "4", name: "Chocolate Cake", tags: ["dessert"] },
-];
-
+const HOST = import.meta.env.VITE_HOST;
 export const Route = createFileRoute("/meals")({
   validateSearch: (search) => {
     const raw = search.tags;
@@ -28,19 +31,19 @@ export const Route = createFileRoute("/meals")({
 function MealsPage() {
   const { tags } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const [filtered, setFiltered] = useState<Meal[]>([]);
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (tags.length === 0) {
-      setFiltered(ALL_MEALS);
-    } else {
-      setFiltered(
-        ALL_MEALS.filter((meal) =>
-          tags.every((t) => meal.tags.includes(t as MealTag))
-        )
-      );
-    }
-  }, [tags]);
+    const fetchMeals = async () => {
+      const response = await fetch(`${HOST}/api/v1/meals`);
+      const { data }: { data: Meal[] } = await response.json();
+      setMeals(data);
+      setLoading(false);
+    };
+
+    fetchMeals();
+  }, []);
 
   const toggle = (tag: MealTag) => {
     const next = tags.includes(tag)
@@ -51,7 +54,14 @@ function MealsPage() {
     });
   };
 
-  const allTags: MealTag[] = ["vegan", "quick", "breakfast", "dessert"];
+  const allTags: MealTag[] = ["keto", "quick", "breakfast", "dessert"];
+
+  const filtered =
+    tags.length > 0
+      ? meals.filter((meal) =>
+          tags.every((t) => meal.tags.includes(t as MealTag))
+        )
+      : meals;
 
   return (
     <div style={{ padding: 20 }}>
@@ -75,13 +85,17 @@ function MealsPage() {
         ))}
       </div>
 
-      <ul>
-        {filtered.map((meal) => (
-          <li key={meal.id}>
-            {meal.name} — <i>{meal.tags.join(", ")}</i>
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <ul>
+          {filtered.map((meal) => (
+            <li key={meal.id}>
+              {meal.title} — <i>{JSON.stringify(meal.tags || [])}</i>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
