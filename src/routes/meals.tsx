@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 
-export type MealTag = "keto" | "dairy free" | "breakfast" | "dessert";
+export type MealTag = "keto" | "dairy free" | "gluten free" | "dessert";
 
 export interface Meal {
   id: string;
@@ -54,7 +54,7 @@ function MealsPage() {
     });
   };
 
-  const allTags: MealTag[] = ["keto", "dairy free", "breakfast", "dessert"];
+  const allTags: MealTag[] = ["keto", "dairy free", "gluten free", "dessert"];
 
   const filtered =
     tags.length > 0
