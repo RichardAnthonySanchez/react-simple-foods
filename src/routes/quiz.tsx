@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+
+type DietOption = "none" | "vegan" | "gluten free" | "dairy free";
 
 export const Route = createFileRoute("/quiz")({
   component: QuizPage,
@@ -15,6 +17,8 @@ function QuizPage() {
   const [dietaryRestrictions, setDietaryRestrictions] = useState("");
   const [cookingTime, setCookingTime] = useState("");
   const [budget, setBudget] = useState("");
+
+  const navigate = useNavigate();
 
   const steps = [
     {
@@ -55,17 +59,17 @@ function QuizPage() {
       setState: setHeight,
       type: "text",
     },
+
     {
       question: "What are your dietary restrictions?",
       state: dietaryRestrictions,
       setState: setDietaryRestrictions,
       type: "options",
       options: [
-        { value: "none", label: "None" },
-        { value: "vegetarian", label: "Vegetarian" },
-        { value: "vegan", label: "Vegan" },
-        { value: "gluten-free", label: "Gluten-free" },
-        { value: "dairy-free", label: "Dairy-free" },
+        { value: "none" as DietOption, label: "None" },
+        { value: "vegan" as DietOption, label: "Vegan" },
+        { value: "gluten free" as DietOption, label: "Gluten free" },
+        { value: "dairy free" as DietOption, label: "Dairy free" },
       ],
     },
     {
@@ -94,10 +98,19 @@ function QuizPage() {
 
   const handleNext = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const tag =
+      dietaryRestrictions !== "none" ? dietaryRestrictions : undefined;
+
     if (step < steps.length - 1) {
       setStep(step + 1);
     } else {
-      // Process the quiz answers
+      navigate({
+        to: "/meals",
+        search: {
+          tags: tag ? [tag] : [],
+        },
+      });
     }
   };
 
