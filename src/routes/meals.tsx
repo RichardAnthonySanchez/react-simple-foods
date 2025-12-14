@@ -1,22 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-
-export type MealTag = "keto" | "dairy free" | "gluten free" | "vegan";
-
-export interface Meal {
-  id: string;
-  title: string | null;
-  servings: number | null;
-  prepTime: number | null;
-  cookTime: number | null;
-  totalTime: number | null;
-  author: string | null;
-  tags: MealTag[];
-  image: string | null;
-  ingredients: string[];
-  directions: string[];
-  links: string[];
-}
+import type { Meal } from "../types/Meal";
+import type { MealTag } from "../types/Meal";
 
 const HOST = import.meta.env.VITE_HOST;
 export const Route = createFileRoute("/meals")({
@@ -59,8 +44,8 @@ function MealsPage() {
   const filtered =
     tags.length > 0
       ? meals.filter((meal) =>
-          tags.every((t) => meal.tags.includes(t as MealTag))
-        )
+        tags.every((t) => meal.tags.includes(t as MealTag))
+      )
       : meals;
 
   return (
