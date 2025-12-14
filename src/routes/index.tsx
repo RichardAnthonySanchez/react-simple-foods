@@ -105,6 +105,20 @@ function QuizPage() {
     if (step < steps.length - 1) {
       setStep(step + 1);
     } else {
+      localStorage.setItem(
+        "userProfile",
+        JSON.stringify({
+          name,
+          email,
+          goals,
+          weight,
+          height,
+          dietaryRestrictions,
+          cookingTime,
+          budget,
+        })
+      );
+
       navigate({
         to: "/meals",
         search: {
